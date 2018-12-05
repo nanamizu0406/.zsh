@@ -1,0 +1,5 @@
+#下記のように.zshrcファイルに記載して使う
+
+for i in ~/.zsh/*.zsh; do
+  source $i
+done
