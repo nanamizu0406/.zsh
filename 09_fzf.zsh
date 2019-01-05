@@ -62,6 +62,25 @@ function buffer-fzf-history() {
 zle -N buffer-fzf-history
 bindkey '^R' buffer-fzf-history
 
+#z を使った高速ディレクトリ移動
+function peco-z-search
+{
+  which peco z > /dev/null
+  if [ $? -ne 0 ]; then
+    echo "Please install peco and z"
+    return 1
+  fi
+  local res=$(z | sort -rn | cut -c 12- | peco)
+  if [ -n "$res" ]; then
+    BUFFER+="cd $res"
+    zle accept-line
+  else
+    return 1
+  fi
+}
+zle -N peco-z-search
+bindkey '^f' peco-z-search
+
 #gitのブランチを切り替える
 function checkout-fzf-gitbranch() {
     local GIT_BRANCH=$(git branch --all | grep -v HEAD | fzf +m)
