@@ -40,15 +40,6 @@ cd-fzf-find() {
 }
 alias fd=cd-fzf-find
 
-#ディレクトリ配下のファイルをemacsで開く
-emacs-fzf-find() {
-    local FILE=$(find ./ -path '*/\.*' -name .git -prune -o -type f -print 2> /dev/null | fzf +m)
-    if [ -n "$FILE" ]; then
-	${EDITOR:-emacs} $FILE
-    fi
-}
-alias fe=emacs-fzf-find
-
 #コマンド履歴
 function buffer-fzf-history() {
     local HISTORY=$(history -n -r 1 | fzf +m)
@@ -63,23 +54,18 @@ zle -N buffer-fzf-history
 bindkey '^R' buffer-fzf-history
 
 #z を使った高速ディレクトリ移動
-function peco-z-search
-{
-  which peco z > /dev/null
-  if [ $? -ne 0 ]; then
-    echo "Please install peco and z"
-    return 1
-  fi
-  local res=$(z | sort -rn | cut -c 12- | peco)
-  if [ -n "$res" ]; then
-    BUFFER+="cd $res"
-    zle accept-line
-  else
-    return 1
-  fi
+fzf-z-search() {
+    local res=$(z | sort -rn | cut -c 12- | fzf)
+    if [ -n "$res" ]; then
+        BUFFER+="cd $res"
+        zle accept-line
+    else
+        return 1
+    fi
 }
-zle -N peco-z-search
-bindkey '^f' peco-z-search
+
+zle -N fzf-z-search
+bindkey '^f' fzf-z-search
 
 #gitのブランチを切り替える
 function checkout-fzf-gitbranch() {
