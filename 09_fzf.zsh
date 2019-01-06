@@ -7,7 +7,7 @@ export FZF_DEFAULT_OPTS='--height 40% --reverse --border'
 fb() {
   local branches branch
   branches=$(git branch -vv) &&
-  branch=$(echo "$branches" | fzf +m) &&
+  branch=$(echo "$branches" | fzf-tmux +m) &&
   git checkout $(echo "$branch" | awk '{print $1}' | sed "s/.* //")
 }
 
@@ -26,7 +26,7 @@ fbr() {
 fshow() {
   git log --graph --color=always \
       --format="%C(auto)%h%d %s %C(black)%C(bold)%cr" "$@" |
-  fzf --ansi --no-sort --reverse --tiebreak=index --bind=ctrl-s:toggle-sort \
+  fzf-tmux --ansi --no-sort --reverse --tiebreak=index --bind=ctrl-s:toggle-sort \
       --bind "ctrl-m:execute:
                 (grep -o '[a-f0-9]\{7\}' | head -1 |
                 xargs -I % sh -c 'git show --color=always % | less -R') << 'FZF-EOF'
@@ -57,7 +57,7 @@ fadd() {
 
 #ディレクトリ配下のディレクトリに移動する
 cd-fzf-find() {
-    local DIR=$(find ./ -path '*/\.*' -name .git -prune -o -type d -print 2> /dev/null | fzf +m)
+    local DIR=$(find ./ -path '*/\.*' -name .git -prune -o -type d -print 2> /dev/null | fzf-tmux +m)
     if [ -n "$DIR" ]; then
         cd $DIR
     fi
@@ -67,7 +67,7 @@ alias fd=cd-fzf-find
 
 #コマンド履歴
 function buffer-fzf-history() {
-    local HISTORY=$(history -n -r 1 | fzf +m)
+    local HISTORY=$(history -n -r 1 | fzf-tmux +m)
     BUFFER=$HISTORY
     if [ -n "$HISTORY" ]; then
         CURSOR=$#BUFFER
@@ -78,9 +78,10 @@ function buffer-fzf-history() {
 zle -N buffer-fzf-history
 bindkey '^R' buffer-fzf-history
 
+
 #z を使った高速ディレクトリ移動
 fzf-z-search() {
-    local res=$(z | sort -rn | cut -c 12- | fzf)
+    local res=$(z | sort -rn | cut -c 12- | fzf-tmux )
     if [ -n "$res" ]; then
         BUFFER+="cd $res"
         zle accept-line
@@ -94,7 +95,7 @@ bindkey '^f' fzf-z-search
 
 #gitのブランチを切り替える
 function checkout-fzf-gitbranch() {
-    local GIT_BRANCH=$(git branch --all | grep -v HEAD | fzf +m)
+    local GIT_BRANCH=$(git branch --all | grep -v HEAD | fzf-tmux +m)
     if [ -n "$GIT_BRANCH" ]; then
         git checkout $(echo "$GIT_BRANCH" | sed "s/.* //" | sed "s#remotes/[^/]*/##")
     fi
