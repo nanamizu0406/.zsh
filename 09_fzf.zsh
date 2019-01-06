@@ -2,6 +2,7 @@
 export FZF_DEFAULT_COMMAND='rg --files --hidden --glob "!.git"'
 export FZF_DEFAULT_OPTS='--height 40% --reverse --border'
 
+
 # fb - checkout git branch
 fb() {
   local branches branch
@@ -9,6 +10,7 @@ fb() {
   branch=$(echo "$branches" | fzf +m) &&
   git checkout $(echo "$branch" | awk '{print $1}' | sed "s/.* //")
 }
+
 
 # fbr - checkout git branch (including remote branches)
 fbr() {
@@ -18,6 +20,7 @@ fbr() {
            fzf-tmux -d $(( 2 + $(wc -l <<< "$branches") )) +m) &&
   git checkout $(echo "$branch" | sed "s/.* //" | sed "s#remotes/[^/]*/##")
 }
+
 
 # fshow - git commit browser
 fshow() {
@@ -31,6 +34,27 @@ fshow() {
 FZF-EOF"
 }
 
+
+#git add diff
+fadd() {
+  local out q n addfiles
+  while out=$(
+      git status --short |
+      awk '{if (substr($0,2,1) !~ / /) print $2}' |
+      fzf-tmux --multi --exit-0 --expect=ctrl-d); do
+    q=$(head -1 <<< "$out")
+    n=$[$(wc -l <<< "$out") - 1]
+    addfiles=(`echo $(tail "-$n" <<< "$out")`)
+    [[ -z "$addfiles" ]] && continue
+    if [ "$q" = ctrl-d ]; then
+      git diff --color=always $addfiles | less -R
+    else
+      git add $addfiles
+    fi
+  done
+}
+
+
 #ディレクトリ配下のディレクトリに移動する
 cd-fzf-find() {
     local DIR=$(find ./ -path '*/\.*' -name .git -prune -o -type d -print 2> /dev/null | fzf +m)
@@ -39,6 +63,7 @@ cd-fzf-find() {
     fi
 }
 alias fd=cd-fzf-find
+
 
 #コマンド履歴
 function buffer-fzf-history() {
