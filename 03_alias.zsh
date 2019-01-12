@@ -10,3 +10,5 @@ alias c='cdr'
 alias e='emacs'
 alias ranger='bash ranger'
 alias cemacs='emacs -nw'
+alias ce='emacs -nw'
+
