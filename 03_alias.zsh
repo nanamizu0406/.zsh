@@ -8,4 +8,7 @@ alias vi='vim'
 alias vz='vim ~/.zshrc'
 alias c='cdr'
 alias e='emacs'
-alias rang='ranger'
+alias ranger='bash ranger'
+alias cemacs='emacs -nw'
+alias ce='emacs -nw'
+

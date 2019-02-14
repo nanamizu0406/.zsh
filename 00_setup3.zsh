@@ -31,3 +31,6 @@ zstyle ':zle:*' word-style unspecified
 
 # Ctrl+sのロック, Ctrl+qのロック解除を無効にする
 setopt no_flow_control
+
+/usr/bin/setxkbmap  -option "ctrl:nocaps"
+
